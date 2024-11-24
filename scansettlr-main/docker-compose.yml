@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    networks:
+      - node-network
+
+  scan-settlr-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: scan-settlr-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_URI: ${SPRING_DATA_MONGODB_URI}
+      APP_SECRET_KEY: ${APP_SECRET_KEY}
+    depends_on:
+      - mongodb
+    networks:
+      - node-network
+
+volumes:
+  mongo-data:
+
+networks:
+  node-network:
+    driver: bridge
