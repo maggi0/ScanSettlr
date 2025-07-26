@@ -3,9 +3,9 @@ package com.scansettler.controllers;
 import com.scansettler.jwt.JwtUtils;
 import com.scansettler.models.User;
 import com.scansettler.repositories.UserRepository;
-import com.scansettler.request.LoginRequest;
-import com.scansettler.response.JwtResponse;
-import com.scansettler.services.UserDetailsImpl;
+import com.scansettler.jwt.LoginRequest;
+import com.scansettler.jwt.JwtResponse;
+import com.scansettler.models.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +40,7 @@ public class AuthController
             return ResponseEntity.badRequest()
                     .body("Username is already taken!");
         }
+
         User createdUser = User.builder()
                 .username(user.getUsername())
                 .password(passwordEncoder.encode(user.getPassword()))
@@ -60,13 +61,13 @@ public class AuthController
         SecurityContextHolder.getContext()
                 .setAuthentication(authentication);
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         return ResponseEntity.ok(JwtResponse.builder()
                 .token(jwt)
-                .username(userDetails.getUsername())
+                .username(customUserDetails.getUsername())
                 .build());
     }
 

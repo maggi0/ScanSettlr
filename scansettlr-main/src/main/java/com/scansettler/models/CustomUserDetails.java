@@ -1,14 +1,14 @@
-package com.scansettler.services;
+package com.scansettler.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.scansettler.models.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 
-public class UserDetailsImpl implements UserDetails
+public class CustomUserDetails implements UserDetails
 {
     private static final long SERIAL_VERSION_UID = 1L;
     private String id;
@@ -16,16 +16,16 @@ public class UserDetailsImpl implements UserDetails
     @JsonIgnore
     private String password;
 
-    public UserDetailsImpl(String id, String username, String password)
+    public CustomUserDetails(String id, String username, String password)
     {
         this.id = id;
         this.username = username;
         this.password = password;
     }
 
-    public static UserDetailsImpl build(User user)
+    public static CustomUserDetails build(User user)
     {
-        return new UserDetailsImpl(user.getId(), user.getUsername(), user.getPassword());
+        return new CustomUserDetails(user.getId(), user.getUsername(), user.getPassword());
     }
 
     public String getId()
@@ -41,7 +41,7 @@ public class UserDetailsImpl implements UserDetails
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities()
     {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
@@ -87,7 +87,7 @@ public class UserDetailsImpl implements UserDetails
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
-        UserDetailsImpl user = (UserDetailsImpl) o;
+        CustomUserDetails user = (CustomUserDetails) o;
         return Objects.equals(id, user.id);
     }
 }

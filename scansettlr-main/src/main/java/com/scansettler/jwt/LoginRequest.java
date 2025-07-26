@@ -1,4 +1,4 @@
-package com.scansettler.response;
+package com.scansettler.jwt;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,8 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class JwtResponse
+public class LoginRequest
 {
-    private String token;
     private String username;
+    private String password;
 }

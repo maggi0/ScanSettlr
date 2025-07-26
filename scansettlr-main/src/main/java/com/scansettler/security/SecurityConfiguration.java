@@ -2,7 +2,7 @@ package com.scansettler.security;
 
 import com.scansettler.jwt.AuthEntryPoint;
 import com.scansettler.jwt.AuthTokenFilter;
-import com.scansettler.services.UserDetailsServiceImpl;
+import com.scansettler.services.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,11 +26,11 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration
 {
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private CustomUserDetailsService customUserDetailsService;
     @Autowired
     private AuthEntryPoint unauthorizedHandler;
 
-    private static final String[] WHITE_LIST_URL = { "/register", "/login" };
+    private static final String[] WHITE_LIST_URL = { "/register", "/login", "/expense/**", "/expenseGroup/**" };
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter()
@@ -43,7 +43,7 @@ public class SecurityConfiguration
     {
         var daoAuthenticationProvider = new DaoAuthenticationProvider();
 
-        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+        daoAuthenticationProvider.setUserDetailsService(customUserDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
 
         return daoAuthenticationProvider;

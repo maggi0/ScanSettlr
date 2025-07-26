@@ -1,6 +1,6 @@
 package com.scansettler.jwt;
 
-import com.scansettler.services.UserDetailsImpl;
+import com.scansettler.models.CustomUserDetails;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -27,7 +27,7 @@ public class JwtUtils
 
     public String generateJwtToken(Authentication authentication)
     {
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        CustomUserDetails userPrincipal = (CustomUserDetails) authentication.getPrincipal();
 
         return Jwts.builder()
                 .subject(userPrincipal.getUsername())

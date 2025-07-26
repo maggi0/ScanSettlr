@@ -1,6 +1,6 @@
 package com.scansettler.jwt;
 
-import com.scansettler.services.UserDetailsServiceImpl;
+import com.scansettler.services.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +13,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import static org.springframework.util.StringUtils.hasText;
 
@@ -22,18 +21,19 @@ public class AuthTokenFilter extends OncePerRequestFilter
     @Autowired
     private JwtUtils jwtUtils;
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private CustomUserDetailsService customUserDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException
     {
-        try {
+        try
+        {
             String jwt = parseJwt(request);
-            if (jwtUtils.validateJwtToken(jwt))
+            if (jwt != null && jwtUtils.validateJwtToken(jwt))
             {
                 String username = jwtUtils.getUsernameFromToken(jwt);
 
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
@@ -56,7 +56,7 @@ public class AuthTokenFilter extends OncePerRequestFilter
 
         if (hasText(headerAuth) && headerAuth.startsWith("Bearer "))
         {
-            return headerAuth.substring(7, headerAuth.length());
+            return headerAuth.substring(7);
         }
 
         return null;
