@@ -30,7 +30,7 @@ public class SecurityConfiguration
     @Autowired
     private AuthEntryPoint unauthorizedHandler;
 
-    private static final String[] WHITE_LIST_URL = { "/register", "/login", "/expense/**", "/expenseGroup/**" };
+    private static final String[] WHITE_LIST_URL = { "/register", "/login", "/expense/**", "/expenseGroup/**", "/receipt/**" };
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter()

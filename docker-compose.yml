@@ -16,7 +16,7 @@ services:
 
   scan-settlr-app:
     build:
-      context: .
+      context: scansettlr-main
       dockerfile: Dockerfile
     container_name: scan-settlr-app
     ports:
@@ -24,13 +24,46 @@ services:
     environment:
       SPRING_DATA_MONGODB_URI: ${SPRING_DATA_MONGODB_URI}
       APP_SECRET_KEY: ${APP_SECRET_KEY}
+      OLLAMA_BASE_URL: http://ollama:11434
+      OCR_SERVER_URL: http://ocr-server:8000
     depends_on:
       - mongodb
+      - ollama
+      - ocr-server
+    networks:
+      - node-network
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - node-network
+    entrypoint: [ "/bin/sh", "-c" ]
+    command: >
+      "
+      ollama serve &
+      sleep 5 &&
+      ollama pull mistral &&
+      wait
+      "
+
+  ocr-server:
+    build:
+      context: scansettlr-ocr
+      dockerfile: Dockerfile
+    container_name: ocr-server
+    ports:
+      - "8000:8000"
     networks:
       - node-network
 
 volumes:
   mongo-data:
+  ollama-data:
 
 networks:
   node-network:
