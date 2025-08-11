@@ -1,14 +1,16 @@
 package com.scansettler.services;
 
-import com.scansettler.models.User;
 import com.scansettler.models.CustomUserDetails;
+import com.scansettler.models.User;
 import com.scansettler.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService
@@ -30,9 +32,20 @@ public class CustomUserDetailsService implements UserDetailsService
         return CustomUserDetails.build(user);
     }
 
+    public User getUserByUsername(String username)
+    {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + " not found"));
+    }
+
     public User getUserById(String id)
     {
         return userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("User " + id + " not found"));
+                .orElseThrow(() -> new UsernameNotFoundException("User with id " + id + " not found"));
+    }
+
+    public List<User> getUsersByIds(Set<String> userIds)
+    {
+        return userRepository.findAllById(userIds);
     }
 }

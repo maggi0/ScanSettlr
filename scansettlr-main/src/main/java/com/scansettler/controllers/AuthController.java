@@ -1,12 +1,11 @@
 package com.scansettler.controllers;
 
+import com.scansettler.jwt.JwtResponse;
 import com.scansettler.jwt.JwtUtils;
+import com.scansettler.jwt.LoginRequest;
+import com.scansettler.models.CustomUserDetails;
 import com.scansettler.models.User;
 import com.scansettler.repositories.UserRepository;
-import com.scansettler.jwt.LoginRequest;
-import com.scansettler.jwt.JwtResponse;
-import com.scansettler.models.CustomUserDetails;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController
 {
     @Autowired
@@ -33,7 +33,7 @@ public class AuthController
     private UserRepository userRepository;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user, HttpServletRequest request)
+    public ResponseEntity<?> register(@RequestBody User user)
     {
         if (userRepository.existsByUsername(user.getUsername()))
         {
@@ -71,9 +71,9 @@ public class AuthController
                 .build());
     }
 
-    @RequestMapping("/confirm")
+    @RequestMapping("/validate")
     @PreAuthorize("isAuthenticated()")
-    public String confirm()
+    public String validate()
     {
         return "AUTHENTICATED";
     }

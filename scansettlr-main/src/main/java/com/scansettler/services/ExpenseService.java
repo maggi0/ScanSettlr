@@ -5,7 +5,9 @@ import com.scansettler.models.ExpenseGroup;
 import com.scansettler.repositories.ExpenseRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 @Service
 public class ExpenseService
@@ -24,6 +26,11 @@ public class ExpenseService
     public Expense getExpenseById(String id)
     {
         return expenseRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Expense with id " + id + " not found"));
+    }
+
+    public List<Expense> getExpensesByIds(Set<String> expenseIds)
+    {
+        return expenseRepository.findAllById(expenseIds);
     }
 
     public Expense addExpense(Expense expense)

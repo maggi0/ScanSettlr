@@ -6,6 +6,8 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Set;
 
 @Document
@@ -20,4 +22,5 @@ public class ExpenseGroup
     private Set<String> userIds;
     private Set<String> expenseIds;
     private Set<Settlement> settlements;
+    private Map<String, BigDecimal> balances;
 }

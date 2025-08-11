@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -31,20 +32,21 @@ public class UserDataLoader implements ApplicationRunner
         log.info("Loading user data...");
 
         List<User> initialUsers = List.of(
-                createUser("1", "user1", "1234", "user1@gmail.com"),
-                createUser("2", "user2", "4321", "user2@gmail.com")
+                createUser("1", "user1", "1234", "user1@gmail.com", Set.of("1")),
+                createUser("2", "user2", "4321", "user2@gmail.com", Set.of("1"))
         );
 
         userRepository.saveAll(initialUsers);
     }
 
-    private User createUser(String id, String username, String password, String email)
+    private User createUser(String id, String username, String password, String email, Set<String> expenseGroupIds)
     {
         return User.builder()
                 .id(id)
                 .username(username)
                 .password(passwordEncoder.encode(password))
                 .email(email)
+                .expenseGroupIds(expenseGroupIds)
                 .build();
     }
 }
