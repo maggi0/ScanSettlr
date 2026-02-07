@@ -4,6 +4,8 @@ import com.scansettler.models.Expense;
 import com.scansettler.models.Settlement;
 import com.scansettler.models.UserBalance;
 import com.scansettler.repositories.ExpenseRepository;
+import com.scansettler.repositories.SettlementRepository;
+import com.scansettler.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -13,13 +15,27 @@ import java.util.*;
 public class SettlementService
 {
     private final ExpenseRepository expenseRepository;
+    private final SettlementRepository settlementRepository;
+    private final UserRepository userRepository;
 
-    public SettlementService(ExpenseRepository expenseRepository)
+    public SettlementService(ExpenseRepository expenseRepository, SettlementRepository settlementRepository, UserRepository userRepository)
     {
         this.expenseRepository = expenseRepository;
+        this.settlementRepository = settlementRepository;
+        this.userRepository = userRepository;
     }
 
-    public Set<Settlement> calculateSettlements(Set<String> expenseIds)
+    public Settlement findById(String id)
+    {
+        return settlementRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Settlement with id " + id + " not found"));
+    }
+
+    public void saveAll(Set<Settlement> settlements)
+    {
+        settlementRepository.saveAll(settlements);
+    }
+
+    public Set<Settlement> calculateSettlements(String expenseGroupId, Set<String> expenseIds)
     {
         List<Expense> expenses = expenseRepository.findAllById(expenseIds);
 
@@ -69,9 +85,14 @@ public class SettlementService
 
             BigDecimal amount = creditor.getBalance().min(debtor.getBalance().abs());
 
+            String creditorUsername = userRepository.findById(creditor.getUserId()).get().getUsername();
+            String debtorUsername = userRepository.findById(debtor.getUserId()).get().getUsername();
+
             settlements.add(new Settlement(
-                    creditor.getUserId(),
-                    debtor.getUserId(),
+                    null,
+                    expenseGroupId,
+                    creditorUsername,
+                    debtorUsername,
                     amount
             ));
 
@@ -89,6 +110,7 @@ public class SettlementService
             }
         }
 
+        saveAll(settlements);
         return settlements;
     }
 }

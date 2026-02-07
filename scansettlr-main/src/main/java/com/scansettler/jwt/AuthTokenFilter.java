@@ -57,6 +57,24 @@ public class AuthTokenFilter extends OncePerRequestFilter
         filterChain.doFilter(request, response);
     }
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException
+    {
+        String path = request.getServletPath();
+
+        if (path.startsWith("/auth"))
+        {
+            return true;
+        }
+
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod()))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     private String parseJwt(HttpServletRequest request)
     {
         String headerAuth = request.getHeader("Authorization");

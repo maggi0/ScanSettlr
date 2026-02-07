@@ -1,7 +1,6 @@
 package com.scansettler.services;
 
 import com.scansettler.models.Expense;
-import com.scansettler.models.ExpenseGroup;
 import com.scansettler.repositories.ExpenseRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,14 +12,15 @@ import java.util.Set;
 public class ExpenseService
 {
     private final ExpenseRepository expenseRepository;
-    private final ExpenseGroupService expenseGroupService;
-    private final SettlementService settlementService;
 
-    public ExpenseService(ExpenseRepository expenseRepository, ExpenseGroupService expenseGroupService, SettlementService settlementService)
+    public ExpenseService(ExpenseRepository expenseRepository)
     {
         this.expenseRepository = expenseRepository;
-        this.expenseGroupService = expenseGroupService;
-        this.settlementService = settlementService;
+    }
+
+    public Expense save(Expense expense)
+    {
+        return expenseRepository.save(expense);
     }
 
     public Expense getExpenseById(String id)
@@ -28,22 +28,21 @@ public class ExpenseService
         return expenseRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Expense with id " + id + " not found"));
     }
 
+    public Expense modifyExpense(Expense expense)
+    {
+        Expense currentExpense = expenseRepository.findById(expense.getId()).get();
+
+        currentExpense.setName(expense.getName());
+        currentExpense.setLenderId(expense.getLenderId());
+        currentExpense.setBorrowerDetails(expense.getBorrowerDetails());
+
+        save(currentExpense);
+
+        return currentExpense;
+    }
+
     public List<Expense> getExpensesByIds(Set<String> expenseIds)
     {
         return expenseRepository.findAllById(expenseIds);
-    }
-
-    public Expense addExpense(Expense expense)
-    {
-        Expense saved = expenseRepository.save(expense);
-
-        ExpenseGroup expenseGroup = expenseGroupService.getExpenseGroupById(expense.getExpenseGroupId());
-
-        expenseGroup.getExpenseIds().add(expense.getId());
-        expenseGroup.setSettlements(settlementService.calculateSettlements(expenseGroup.getExpenseIds()));
-
-        expenseGroupService.save(expenseGroup);
-
-        return saved;
     }
 }

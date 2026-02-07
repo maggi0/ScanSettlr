@@ -32,6 +32,18 @@ public class CustomUserDetailsService implements UserDetailsService
         return CustomUserDetails.build(user);
     }
 
+    public void addExpenseGroup(String userId, String expenseGroupId)
+    {
+        User user = getUserById(userId);
+
+        Set<String> expenseGroupIds = user.getExpenseGroupIds();
+        expenseGroupIds.add(expenseGroupId);
+
+        user.setExpenseGroupIds(expenseGroupIds);
+
+        userRepository.save(user);
+    }
+
     public User getUserByUsername(String username)
     {
         return userRepository.findByUsername(username)
@@ -42,6 +54,11 @@ public class CustomUserDetailsService implements UserDetailsService
     {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UsernameNotFoundException("User with id " + id + " not found"));
+    }
+
+    public List<User> searchUsers(String query)
+    {
+        return userRepository.findByUsernameContainingIgnoreCase(query);
     }
 
     public List<User> getUsersByIds(Set<String> userIds)

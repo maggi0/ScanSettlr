@@ -4,6 +4,10 @@ import com.scansettler.models.CustomUserDetails;
 import com.scansettler.models.ExpenseGroup;
 import com.scansettler.models.Settlement;
 import com.scansettler.models.User;
+import com.scansettler.schema.AddUsersRequest;
+import com.scansettler.schema.CreateExpenseGroupRequest;
+import com.scansettler.schema.GetBalancesResponse;
+import com.scansettler.services.BalanceService;
 import com.scansettler.services.CustomUserDetailsService;
 import com.scansettler.services.ExpenseGroupService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,10 +17,12 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/expenseGroup")
-public record ExpenseGroupController(ExpenseGroupService expenseGroupService, CustomUserDetailsService customUserDetailsService)
+public record ExpenseGroupController(ExpenseGroupService expenseGroupService,
+                                     CustomUserDetailsService customUserDetailsService, BalanceService balanceService)
 {
     @GetMapping("/{id}")
     public ExpenseGroup getExpenseGroup(@PathVariable String id)
@@ -41,24 +47,48 @@ public record ExpenseGroupController(ExpenseGroupService expenseGroupService, Cu
     }
 
     @GetMapping("/{id}/balances")
-    public Map<String, BigDecimal> getBalances(@PathVariable String id)
+    public GetBalancesResponse getBalances(@PathVariable String id)
+    {
+        ExpenseGroup expenseGroup = expenseGroupService.getExpenseGroupById(id);
+        Map<String, BigDecimal> balances = balanceService.calculateBalances(expenseGroup.getExpenseIds());
+        Set<String> userIds = getUsers(id).stream().map(User::getUsername).collect(Collectors.toSet());
+
+        for (String userId : userIds)
+        {
+            if (!balances.containsKey(userId))
+            {
+                balances.put(userId, BigDecimal.ZERO);
+            }
+        }
+
+        return new GetBalancesResponse(balances);
+    }
+
+    @GetMapping("/{id}/users")
+    public List<User> getUsers(@PathVariable String id)
     {
         ExpenseGroup expenseGroup = expenseGroupService.getExpenseGroupById(id);
 
-        return expenseGroup.getBalances();
+        return customUserDetailsService.getUsersByIds(expenseGroup.getUserIds());
     }
 
     @PostMapping
-    public ExpenseGroup createExpenseGroup(@AuthenticationPrincipal CustomUserDetails customUserDetails, String name)
+    public ExpenseGroup createExpenseGroup(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody CreateExpenseGroupRequest request)
     {
         User user = customUserDetailsService.getUserById(customUserDetails.getId());
-        return expenseGroupService.createExpenseGroup(user, name);
+        return expenseGroupService.createExpenseGroup(user, request.name());
     }
 
-    @PostMapping("/addUser")
-    public ExpenseGroup addUserToExpenseGroup(String expenseGroupId, String userId)
+    @PostMapping("/{id}/users")
+    public ExpenseGroup addUsersToExpenseGroup(@PathVariable String id, @RequestBody AddUsersRequest request)
     {
-        return expenseGroupService.addUserToExpenseGroup(expenseGroupId, userId);
+        return expenseGroupService.addUsersToExpenseGroup(id, request.ids());
+    }
+
+    @DeleteMapping("/{id}/users/{userId}")
+    public void removeUserFromExpenseGroup(@PathVariable String id, @PathVariable String userId)
+    {
+        expenseGroupService.removeUserFromExpenseGroup(id, userId);
     }
 
     @DeleteMapping

@@ -41,7 +41,7 @@ public class ExpenseGroupLoader implements ApplicationRunner
                 .name(name)
                 .userIds(userIds)
                 .expenseIds(expenseIds)
-                .settlements(settlementService.calculateSettlements(expenseIds))
+                .settlements(settlementService.calculateSettlements(id, expenseIds))
                 .build();
     }
 }

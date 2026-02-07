@@ -13,6 +13,8 @@ WORKDIR /app
 
 COPY --from=build /app/target/*.jar scan-settlr.jar
 
-EXPOSE 8080
+EXPOSE 8080 5005
 
-ENTRYPOINT ["java", "-jar", "/app/scan-settlr.jar"]
+ENV JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+
+ENTRYPOINT ["java", "-jar", "scan-settlr.jar"]
