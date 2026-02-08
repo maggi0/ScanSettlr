@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:controls="clr-namespace:ScanSettlr.Controls"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanSettlr.UsersPage"
+             BackgroundColor="#218CA1">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Top bar -->
+        <controls:TopBar x:Name="TopBarView"
+                         Title="{Binding GroupName}"/>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="40">
+                <!-- Switch bar -->
+                <controls:ExpenseGroupSwitchBar x:Name="SwitchBar" TabSelected="OnTabSelected"/>
+
+                <!-- Users list with balances -->
+                <CollectionView x:Name="UsersList" Margin="0,20,0,40">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="70,*" HeightRequest="50">
+                                <Border
+                                    Stroke="Black"
+                                    BackgroundColor="#34DFFF">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="20,0,20,0" />
+                                    </Border.StrokeShape>
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border"
+                                                     Binding="{Binding balancePositive}"
+                                                     Value="True">
+                                            <Setter Property="BackgroundColor" Value="LightGreen" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Border"
+                                                     Binding="{Binding balancePositive}"
+                                                     Value="False">
+                                            <Setter Property="BackgroundColor" Value="LightCoral" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Button Text="{Binding balance, StringFormat='{0:0.00}'}"
+                                            BackgroundColor="Transparent"
+                                            TextColor="Black">
+                                    </Button>
+                                </Border>
+                                <Border
+                                    Grid.Column="1"
+                                    Stroke="Black"
+                                    BackgroundColor="#BDF4F8">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="0,20,0,20" />
+                                    </Border.StrokeShape>
+                                    <Button Text="{Binding name}"
+                                            BackgroundColor="Transparent"
+                                            TextColor="Black">
+                                    </Button>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Add new user -->
+                <Button Text="Add new user"
+                            BorderWidth="1"
+                            BorderColor="Black"
+                            TextColor="Black"
+                            BackgroundColor="#BDF8BF"
+                            HeightRequest="50"
+                            CornerRadius="10"
+                            Clicked="AddUserButton_Clicked" />
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

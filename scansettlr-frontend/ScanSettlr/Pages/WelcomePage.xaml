@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanSettlr.WelcomePage"
+             BackgroundColor="#F5F5F5">
+
+    <ScrollView>
+        <Grid RowDefinitions="*,Auto,Auto"
+              ColumnDefinitions="*,*"
+              Padding="30">
+
+            <Image Grid.Row="0" Grid.ColumnSpan="2"
+                   Source="logo.png"
+                   Aspect="AspectFit"
+                   WidthRequest="400"
+                   HeightRequest="300"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"/>
+
+            <Button Grid.Row="1" Grid.Column="0"
+                    Text="Log In" 
+                    BackgroundColor="#218CA1" 
+                    FontSize="18" 
+                    TextColor="White"
+                    HeightRequest="50"
+                    Margin="10"
+                    CornerRadius="10"
+                    HorizontalOptions="Fill"
+                    Clicked="OnLoginClicked"/>
+
+            <Button Grid.Row="1" Grid.Column="1"
+                    Text="Sign Up" 
+                    BackgroundColor="#16606E" 
+                    FontSize="18"
+                    TextColor="White"
+                    HeightRequest="50"
+                    CornerRadius="10"
+                    Margin="10"
+                    HorizontalOptions="Fill"
+                    Clicked="OnSignUpClicked"/>
+            
+        </Grid>
+    </ScrollView>
+</ContentPage>

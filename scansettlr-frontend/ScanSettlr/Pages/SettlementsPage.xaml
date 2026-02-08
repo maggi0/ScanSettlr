@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:controls="clr-namespace:ScanSettlr.Controls"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanSettlr.SettlementsPage"
+             x:Name="PageRoot"
+             BackgroundColor="#218CA1">
+
+    <Grid RowDefinitions="Auto,*">
+        
+        <!-- Top bar -->
+        <controls:TopBar x:Name="TopBarView"
+                         Title="{Binding GroupName}" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="40">
+                <!-- Switch bar -->
+                <controls:ExpenseGroupSwitchBar x:Name="SwitchBar" TabSelected="OnTabSelected"/>
+
+                <!-- Settlement list -->
+                <CollectionView x:Name="SettlementsList" Margin="0,20,0,40">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border
+                                Padding="10"
+                                Stroke="Black"
+                                BackgroundColor="#BDF4F8"
+                                HeightRequest="140">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="20"></RoundRectangle>
+                                </Border.StrokeShape>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border"
+                                                 Binding="{Binding isPaid}"
+                                                 Value="True">
+                                        <Setter Property="BackgroundColor" Value="#D3D3D3"/>
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <VerticalStackLayout>
+                                    <Label Text="{Binding description}"
+                                       TextColor="Black"
+                                       FontSize="24"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Start"/>
+                                    <Label Text="{Binding amount}"
+                                       TextColor="Black"
+                                       FontSize="24"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Start"/>
+                                    <Button Margin="70,10,70,10"
+                                            BorderWidth="1"
+                                            BorderColor="Black"
+                                            FontSize="11"
+                                            HeightRequest="35"
+                                            CornerRadius="10"
+                                            Command="{Binding Source={x:Reference PageRoot}, Path=TogglePaidCommand}"
+                                            CommandParameter="{Binding .}">
+                                        <Button.Triggers>
+                                            <!-- PAID -->
+                                            <DataTrigger TargetType="Button"
+                                                         Binding="{Binding isPaid}"
+                                                         Value="True">
+                                                <Setter Property="Text" Value="Unmark as paid"/>
+                                                <Setter Property="BackgroundColor" Value="#E5E5E5"/>
+                                                <Setter Property="TextColor" Value="Black"/>
+                                            </DataTrigger>
+
+                                            <!-- NOT PAID -->
+                                            <DataTrigger TargetType="Button"
+                                                         Binding="{Binding isPaid}"
+                                                         Value="False">
+                                                <Setter Property="Text" Value="Mark as paid"/>
+                                                <Setter Property="BackgroundColor" Value="#BDF8BF"/>
+                                                <Setter Property="TextColor" Value="Black"/>
+                                            </DataTrigger>
+                                        </Button.Triggers>
+                                    </Button>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+                
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

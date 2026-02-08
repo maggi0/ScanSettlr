@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanSettlr.Controls.TopBar"
+             x:Name="TopBarView">
+    <Border Padding="0"
+            Stroke="Black"
+            BackgroundColor="#16606E"
+            HeightRequest="120">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="0,0,20,20" />
+        </Border.StrokeShape>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Back Button -->
+            <Border VerticalOptions="Start"
+                    HorizontalOptions="Start"
+                    BackgroundColor="#BDF4F8"
+                    Stroke="Black"
+                    HeightRequest="40"
+                    IsVisible="{Binding ShowBackButton, Source={x:Reference TopBarView}}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="0,0,0,20"></RoundRectangle>
+                </Border.StrokeShape>
+                <ImageButton BackgroundColor="Transparent"
+                             Clicked="OnBackClicked"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             HeightRequest="22"
+                             WidthRequest="36"
+                             Source="back_arrow.png"
+                             Aspect="AspectFit" />
+            </Border>
+
+            <!-- Title text -->
+            <Label  Grid.Column="1"
+                    FontFamily="Roboto"
+                    Text="{Binding Title, Source={x:Reference TopBarView}}"
+                    TextColor="White"
+                    FontSize="20"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"/>
+
+            <Label Grid.Column="1"
+                   Text="{Binding Currency, Source={x:Reference TopBarView}}"
+                   TextColor="White"
+                   FontSize="12"
+                   HorizontalOptions="End"
+                   VerticalOptions="Start"
+                   Margin="0,5,5,0">
+                <Label.Triggers>
+                    <DataTrigger TargetType="Label"
+                     Binding="{Binding ShowSettingsButton, Source={x:Reference TopBarView}}"
+                     Value="False">
+                        <Setter Property="IsVisible" Value="False" />
+                    </DataTrigger>
+                </Label.Triggers>
+            </Label>
+
+            <!-- Settings Button -->
+            <Border Grid.Column="2"
+                    VerticalOptions="Start"
+                    HorizontalOptions="End"
+                    BackgroundColor="#BDF4F8"
+                    Stroke="Black"
+                    HeightRequest="40"
+                    IsVisible="{Binding ShowSettingsButton, Source={x:Reference TopBarView}}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="0,0,20,0"></RoundRectangle>
+                </Border.StrokeShape>
+                <ImageButton BackgroundColor="Transparent"
+                             Clicked="OnSettingsClicked"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             HeightRequest="22"
+                             WidthRequest="36"
+                             Source="settings.png"
+                             Aspect="AspectFit" />
+            </Border>
+        </Grid>
+    </Border>
+</ContentView>

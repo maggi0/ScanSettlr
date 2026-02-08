@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:controls="clr-namespace:ScanSettlr.Controls"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanSettlr.TransactionPage"
+             BackgroundColor="#218CA1">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <controls:TopBar Title="{Binding TransactionName}" />
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="40">
+
+                <Border Stroke="Black"
+                        BackgroundColor="#16606E">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20,20,0,0" />
+                    </Border.StrokeShape>
+                    <Label Text="Paid by"
+                           TextColor="White"
+                           FontSize="20"
+                           FontFamily="Roboto"
+                           HorizontalTextAlignment="Center">
+                    </Label>
+                </Border>
+                
+                <Grid ColumnDefinitions="70,*" HeightRequest="50">
+                    <Border Stroke="Black"
+                            BackgroundColor="#34DFFF">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="0" />
+                        </Border.StrokeShape>
+                        <Button Text="{Binding Lender.Amount}"
+                                BackgroundColor="Transparent"
+                                TextColor="Black">
+                        </Button>
+                    </Border>
+                    <Border Grid.Column="1"
+                            Stroke="Black"
+                            BackgroundColor="#BDF4F8">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="0" />
+                        </Border.StrokeShape>
+                        <Button Text="{Binding Lender.Name}"
+                                BackgroundColor="Transparent"
+                                TextColor="Black">
+                        </Button>
+                    </Border>
+                </Grid>
+                                
+                <Border Margin="0,50,0,0"
+                        Stroke="Black"
+                        BackgroundColor="#16606E">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20,20,0,0" />
+                    </Border.StrokeShape>
+                    <Label Text="Participants"
+                           TextColor="White"
+                           FontSize="20"
+                           FontFamily="Roboto"
+                           HorizontalTextAlignment="Center">
+                    </Label>
+                </Border>
+
+                <CollectionView ItemsSource="{Binding Borrowers}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid ColumnDefinitions="70,*" HeightRequest="50">
+                                <Border Stroke="Black" BackgroundColor="#34DFFF">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="0" />
+                                    </Border.StrokeShape>
+                                    <Label Text="{Binding Amount}"
+                                           BackgroundColor="Transparent"
+                                           TextColor="Black"
+                                           VerticalTextAlignment="Center"
+                                           HorizontalTextAlignment="Center" />
+                                </Border>
+                                <Border Grid.Column="1" Stroke="Black" BackgroundColor="#BDF4F8">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="0" />
+                                    </Border.StrokeShape>
+                                    <Label Text="{Binding Name}"
+                                           BackgroundColor="Transparent"
+                                           TextColor="Black"
+                                           VerticalTextAlignment="Center"
+                                           HorizontalTextAlignment="Center" />
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Button Text="Edit transaction"
+                        Margin="0,40,0,0"
+                        BorderWidth="1"
+                        BorderColor="Black"
+                        TextColor="Black"
+                        BackgroundColor="#CFCFCF"
+                        HeightRequest="50"
+                        CornerRadius="10"
+                        Clicked="OnEditTransactionClicked"/>
+                
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+
+</ContentPage>

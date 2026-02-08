@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Name="TransactionItems"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:controls="clr-namespace:ScanSettlr.Controls"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanSettlr.TransactionItemsPage"
+             BackgroundColor="#218CA1">
+    
+    <Grid RowDefinitions="Auto,*">
+        <!-- Top bar -->
+        <controls:TopBar Title="Advanced Options"/>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout>
+
+                <Grid Grid.Column="1" 
+                      Margin="30"
+                      HorizontalOptions="Center"
+                      VerticalOptions="Center"
+                      ColumnDefinitions="*,*"
+                      ColumnSpacing="50">
+                    <Button Grid.Column="0"
+                            Text="Scan Receipt"
+                            Clicked="OnSendReceiptClicked"
+                            BackgroundColor="#BDF4F8"
+                            TextColor="Black"
+                            FontAttributes="Bold"
+                            CornerRadius="10"
+                            HeightRequest="50"
+                            Padding="10"
+                            HorizontalOptions="Fill"
+                            VerticalOptions="Center"/>
+                    <Border Grid.Column="1"
+                            BackgroundColor="White"
+                            Stroke="Black">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="5"></RoundRectangle>
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="*,Auto" Padding="0,0,5,0">
+                            <Picker ItemsSource="{Binding Source={x:Reference TransactionItems}, Path=AvailableCurrencies}"
+                                    SelectedItem="{Binding Source={x:Reference TransactionItems}, Path=SelectedCurrency, Mode=TwoWay}"
+                                    HorizontalOptions="End"/>
+                            <Label Grid.Column="1"
+                                   Text="▼"
+                                   FontSize="14"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="End"
+                                   TextColor="Gray"
+                                   Margin="0,0,3,0" />
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <CollectionView x:Name="ItemsList"
+                                ItemsSource="{Binding Items}"
+                                Margin="0,0,0,0"
+                                SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="5"
+                                    HorizontalOptions="Center"
+                                    Stroke="Black"
+                                    BackgroundColor="#BDF4F8"
+                                    WidthRequest="350"
+                                    HeightRequest="60">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="10"></RoundRectangle>
+                                </Border.StrokeShape>
+                                <HorizontalStackLayout VerticalOptions="Center">
+                                    
+                                    <Border Stroke="Black" HeightRequest="45" WidthRequest="150">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="5,0,5,0"/>
+                                        </Border.StrokeShape>
+                                        <Entry Text="{Binding Name, Mode=TwoWay}"
+                                               Placeholder="Name"
+                                               FontSize="12"
+                                               BackgroundColor="White"
+                                               VerticalOptions="Center"/>
+                                    </Border>
+
+                                    <!-- Amount (two-way string) -->
+                                    <Border Stroke="Black" HeightRequest="45" WidthRequest="65">
+                                        <Entry Text="{Binding Amount, Mode=TwoWay}"
+                                               Placeholder="Amount"
+                                               FontSize="12"
+                                               BackgroundColor="White"
+                                               Keyboard="Numeric"
+                                               HorizontalTextAlignment="Center"
+                                               VerticalOptions="Center"/>
+                                    </Border>
+
+                                    <!-- Paid by picker per item -->
+                                    <Border BackgroundColor="White"
+                                            Stroke="Black"
+                                            HeightRequest="45"
+                                            WidthRequest="100">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="0,5,0,5"></RoundRectangle>
+                                        </Border.StrokeShape>
+                                        <Grid ColumnDefinitions="*,Auto" Padding="0,0,5,0">
+                                            <Picker ItemsSource="{Binding Source={x:Reference TransactionItems}, Path=AvailableUsers}"
+                                                    ItemDisplayBinding="{Binding Name}"
+                                                    SelectedItem="{Binding PaidBy, Mode=TwoWay}"
+                                                    HorizontalOptions="Fill"
+                                                    FontSize="12"/>
+                                            <Label Grid.Column="1"
+                                                   Text="▼"
+                                                   FontSize="14"
+                                                   VerticalOptions="Center"
+                                                   HorizontalOptions="End"
+                                                   TextColor="Gray"
+                                                   Margin="0,0,3,0" />
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Delete Button -->
+                                    <Border BackgroundColor="#F87171"
+                                            Stroke="Black"
+                                            WidthRequest="20"
+                                            Margin="3,0,0,0"
+                                            HeightRequest="25">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="5"></RoundRectangle>
+                                        </Border.StrokeShape>
+                                        <Button Text="X"
+                                                FontSize="16"
+                                                BackgroundColor="Transparent"
+                                                TextColor="Black"
+                                                CornerRadius="8"
+                                                Padding="0"
+                                                VerticalOptions="Center"
+                                                HorizontalOptions="Center"
+                                                Command="{Binding Source={x:Reference TransactionItems}, Path=DeleteItemCommand}"
+                                                CommandParameter="{Binding .}"/>
+                                    </Border>
+
+                                </HorizontalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Border Margin="40,0,40,40"
+                        Padding="10"
+                        Stroke="Black"
+                        BackgroundColor="#BDF4F8"
+                        HeightRequest="60"
+                        WidthRequest="350">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10"></RoundRectangle>
+                    </Border.StrokeShape>
+                    <Button Text="Add item"
+                            BorderWidth="1"
+                            BorderColor="Black"
+                            TextColor="Black"
+                            BackgroundColor="#BDF8BF"
+                            HeightRequest="40"
+                            WidthRequest="200"
+                            CornerRadius="10"
+                            Clicked="OnAddItemClicked"/>
+                </Border>
+
+
+                <Button Text="Calculate details"
+                        BorderWidth="1"
+                        BorderColor="Black"
+                        TextColor="Black"
+                        BackgroundColor="#CFCFCF"
+                        HeightRequest="50"
+                        CornerRadius="10"
+                        Clicked="OnCalculateDetailsClicked"/>
+                
+                <Button Text="Save Items"
+                        BorderWidth="1"
+                        BorderColor="Black"
+                        TextColor="Black"
+                        BackgroundColor="#BDF8BF"
+                        HeightRequest="50"
+                        WidthRequest="300"
+                        CornerRadius="10"
+                        Clicked="OnSaveItemsClicked"/>
+                
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

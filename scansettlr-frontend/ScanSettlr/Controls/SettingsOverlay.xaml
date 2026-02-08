@@ -1,0 +1,57 @@
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanSettlr.Controls.SettingsOverlay"
+             IsVisible="False"
+             InputTransparent="False">
+    
+    <AbsoluteLayout HorizontalOptions="Fill" VerticalOptions="Fill">
+
+        <BoxView x:Name="DimBackground"
+                 BackgroundColor="Black"
+                 Opacity="0"
+                 AbsoluteLayout.LayoutBounds="0,0,1,1"
+                 AbsoluteLayout.LayoutFlags="All"
+                 InputTransparent="False"/>
+        
+        <Frame AbsoluteLayout.LayoutBounds="0.5,0.5,-1,-1"
+               AbsoluteLayout.LayoutFlags="PositionProportional"
+               BackgroundColor="White"
+               CornerRadius="20"
+               Padding="20"
+               HasShadow="True"
+               WidthRequest="300">
+            
+            <VerticalStackLayout Spacing="20">
+
+                <!-- Header -->
+                <Label Text="Settings"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       HorizontalOptions="Center"/>
+
+                <!-- Currency selection -->
+                <VerticalStackLayout>
+                    <Label Text="Select Currency:" FontSize="18"/>
+                    <Picker x:Name="CurrencyPicker" Title="Choose currency">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>USD</x:String>
+                                <x:String>EUR</x:String>
+                                <x:String>GBP</x:String>
+                                <x:String>PLN</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                </VerticalStackLayout>
+
+                <!-- Sign Out Button -->
+                <Button Text="Sign Out"
+                        TextColor="White"
+                        BackgroundColor="#D9534F"
+                        Clicked="SignOutClicked"/>
+                
+                <Button Text="Close" Clicked="CloseClicked"/>
+            </VerticalStackLayout>
+        </Frame>
+    </AbsoluteLayout>
+</ContentView>

@@ -1,0 +1,68 @@
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ScanSettlr"
+             x:Class="ScanSettlr.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+                <ResourceDictionary>
+
+                    <!-- Reusable top bar with back button -->
+                    <ControlTemplate x:Key="TopBarWithBackTemplate">
+                        <Grid RowDefinitions="Auto,*">
+
+                            <!-- Top bar -->
+                            <Grid HeightRequest="56"
+                          BackgroundColor="#16606E"
+                          Padding="8,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Back button (top-left) -->
+                                <Button Text="←"
+                                        FontSize="24"
+                                        BackgroundColor="Transparent"
+                                        TextColor="White"
+                                        VerticalOptions="Center"
+                                        HorizontalOptions="Start"
+                                        Padding="10,0"
+                                        Clicked="OnBackClicked" />
+
+                                <!-- Title centered (binds to ContentPage.Title) -->
+                                <Label Grid.Column="1"
+                                       Text="{TemplateBinding Title}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       TextColor="White"
+                                       FontSize="20"
+                                       FontFamily="Roboto" />
+
+                                <!-- Optional right-side slot (toolbar/actions) -->
+                                <ContentPresenter Grid.Column="2"
+                                          x:Name="RightSlot"
+                                          />
+                                <!-- leave empty or inject via ControlTemplate if needed -->
+                            </Grid>
+
+                            <!-- Page content goes here -->
+                            <ContentPresenter Grid.Row="1" />
+                        </Grid>
+                    </ControlTemplate>
+
+                    <!-- Apply to ALL ContentPages (and hide default nav bar) -->
+                    <Style TargetType="ContentPage">
+                        <Setter Property="NavigationPage.HasNavigationBar" Value="False" />
+                        <Setter Property="ControlTemplate" Value="{StaticResource TopBarWithBackTemplate}" />
+                    </Style>
+
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

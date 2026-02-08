@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage x:Name="TransactionDetails"
+             xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:controls="clr-namespace:ScanSettlr.Controls"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanSettlr.TransactionDetailsPage"
+             BackgroundColor="#218CA1">
+    
+    <Grid RowDefinitions="Auto,*">
+        <!-- Top bar -->
+        <controls:TopBar Title="Transaction details"/>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="40">
+
+                <Label Text="Title:"
+                       Padding="5"
+                       TextColor="White"/>
+                <Border Stroke="Black">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="5"></RoundRectangle>
+                    </Border.StrokeShape>
+                    <Entry x:Name="titleEntry"
+                           Text="{Binding Title}"
+                           Placeholder="Title"
+                           BackgroundColor="White"/>
+                </Border>
+
+
+                <Label  Text="Amount:"
+                        Padding="5"
+                        TextColor="White"/>
+                <CollectionView ItemsSource="{Binding Currencies}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,70" HeightRequest="50" RowSpacing="5" ColumnSpacing="10">
+                                <Border Stroke="Black">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="5"></RoundRectangle>
+                                    </Border.StrokeShape>
+                                    <Entry x:Name="amountEntry"
+                                           Placeholder="Amount"
+                                           BackgroundColor="White"
+                                           Text="{Binding Amount, Mode=TwoWay}"
+                                           Keyboard="Numeric"/>
+                                </Border>
+                                <Border Grid.Column="1"
+                                        BackgroundColor="White"
+                                        Stroke="Black">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="5"></RoundRectangle>
+                                    </Border.StrokeShape>
+
+                                    <Grid ColumnDefinitions="*,Auto" Padding="0,0,5,0">
+                                        <Picker ItemsSource="{Binding Source={x:Reference TransactionDetails}, Path=AvailableCurrencies}"
+                                                SelectedItem="{Binding SelectedCurrency, Mode=TwoWay}"
+                                                HorizontalOptions="End"/>
+                                        <Label Grid.Column="1"
+                                               Text="▼"
+                                               FontSize="14"
+                                               VerticalOptions="Center"
+                                               HorizontalOptions="End"
+                                               TextColor="Gray"
+                                               Margin="0,0,3,0" />
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <!-- Add Users section -->
+                <Label Text="Paid by:"
+                       Padding="5"
+                       Margin="0,20,0,0"
+                       TextColor="White"/>
+
+                <!-- Second CollectionView: users -->
+                <Border Stroke="Black" HeightRequest="50">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="5"/>
+                    </Border.StrokeShape>
+
+                    <Grid ColumnDefinitions="*,Auto" Padding="0,0,5,0" BackgroundColor="White">
+                        <Picker ItemsSource="{Binding Source={x:Reference TransactionDetails}, Path=AvailableUsers}"
+                                ItemDisplayBinding="{Binding username}"
+                                SelectedItem="{Binding SelectedLender, Mode=TwoWay}"
+                                TextColor="Black"
+                                BackgroundColor="Transparent" />
+                        <Label Grid.Column="1"
+                               Text="▼"
+                               FontSize="14"
+                               VerticalOptions="Center"
+                               HorizontalOptions="End"
+                               TextColor="Gray"
+                               Margin="0,0,3,0" />
+                    </Grid>
+                </Border>
+
+
+                <!-- Participants section header -->
+                <Grid ColumnDefinitions="*,Auto" Margin="0,30,0,0">
+                    <Label Text="Participants:"
+                           VerticalOptions="Center"
+                           TextColor="White"/>
+
+                    <Border Grid.Column="1" Stroke="Black" HeightRequest="20">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="5"/>
+                        </Border.StrokeShape>
+                        <Button Text="Split Evenly"
+                                Padding="0"
+                                Clicked="OnSplitEvenlyClicked"
+                                BackgroundColor="#BDF4F8"
+                                TextColor="Black"
+                                FontSize="8"
+                                WidthRequest="80"
+                                VerticalOptions="End"
+                                HorizontalOptions="End"/>
+                    </Border>
+                </Grid>
+
+                <CollectionView ItemsSource="{Binding Participants}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <!-- 3 columns: CheckBox, Name, Amount -->
+                            <Grid ColumnDefinitions="*,80"
+                                  HeightRequest="50"
+                                  Padding="0,5">
+
+                                <Border Grid.Column="0"
+                                        HeightRequest="50"
+                                        Stroke="Black"
+                                        BackgroundColor="White">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="5"/>
+                                    </Border.StrokeShape>
+                                    <Grid ColumnDefinitions="Auto,*" Padding="10,0">
+                                        <!-- Checkbox -->
+                                        <CheckBox Grid.Column="0"
+                                                  IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                  VerticalOptions="Center"
+                                                  Color="#1B5E6A" />
+
+                                        <!-- Participant Name -->
+                                        <Label Grid.Column="1"
+                                               Text="{Binding Name}"
+                                               VerticalOptions="Center"
+                                               HorizontalOptions="Center"
+                                               TextColor="Black"
+                                               FontSize="16"
+                                               Margin="10,0,0,0"/>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Amount Entry -->
+                                <Border Grid.Column="1"
+                                        Stroke="Black"
+                                        HeightRequest="50"
+                                        BackgroundColor="White">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="5" />
+                                    </Border.StrokeShape>
+                                    <Entry Text="{Binding Amount, Mode=TwoWay}"
+                                           Placeholder="0.00"
+                                           Keyboard="Numeric"
+                                           HorizontalTextAlignment="Center"
+                                           BackgroundColor="White" />
+                                </Border>
+
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Button Text="Advanced Options"
+                            Margin="0,40,0,20"
+                            BorderWidth="1"
+                            BorderColor="Black"
+                            TextColor="Black"
+                            BackgroundColor="#CFCFCF"
+                            HeightRequest="50"
+                            CornerRadius="10"
+                            Clicked="OnAdvancedOptionsClicked"/>
+
+                <Button Text="Save transaction"
+                            BorderWidth="1"
+                            BorderColor="Black"
+                            TextColor="Black"
+                            BackgroundColor="#BDF8BF"
+                            HeightRequest="50"
+                            CornerRadius="10"
+                            Clicked="OnSaveTransactionClicked"/>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

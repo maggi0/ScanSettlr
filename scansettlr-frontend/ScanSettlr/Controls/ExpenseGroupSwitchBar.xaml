@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanSettlr.Controls.ExpenseGroupSwitchBar"
+             x:Name="SwitchBar">
+    <Grid ColumnDefinitions="*,*,*" HeightRequest="50">
+		<Border
+			Stroke="Black"
+			BackgroundColor="{Binding SettlementsColor, Source={x:Reference SwitchBar}}">
+			<Border.StrokeShape>
+				<RoundRectangle CornerRadius="20,0,20,0" />
+			</Border.StrokeShape>
+			<Button Text="Settlements"
+					TextColor="Black"
+                    FontSize="12"
+                    Padding="4,0"
+					Clicked="SettlementsClicked"
+					BackgroundColor="Transparent"/>
+		</Border>
+		<Border
+			Grid.Column="1"
+			Stroke="Black"
+			BackgroundColor="{Binding TransactionsColor, Source={x:Reference SwitchBar}}">
+			<Button Text="Transactions"
+					TextColor="Black"
+                    FontSize="12"
+                    Padding="4,0"
+					Clicked="TransactionsClicked"
+					BackgroundColor="Transparent"/>
+		</Border>
+		<Border
+			Grid.Column="2"
+			Stroke="Black"
+			BackgroundColor="{Binding UsersColor, Source={x:Reference SwitchBar}}">
+			<Border.StrokeShape>
+				<RoundRectangle CornerRadius="0,20,0,20" />
+			</Border.StrokeShape>
+			<Button Text="Users"
+					TextColor="Black"
+                    FontSize="12"
+                    Padding="4,0"
+					Clicked="UsersClicked"
+					BackgroundColor="Transparent"/>
+		</Border>
+    </Grid>
+</ContentView>

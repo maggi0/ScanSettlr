@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:controls="clr-namespace:ScanSettlr.Controls"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanSettlr.MainPage"
+             BackgroundColor="#218CA1"
+             Title="Expense Groups">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- Top bar -->
+        <controls:TopBar x:Name="TopBar"
+                         Title="Expense Groups"
+                         ShowBackButton="False"/>
+
+        <!-- Scrollable content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="40">
+
+                <Frame
+                    Padding="0"
+                    Margin="70,0,70,40"
+                    BorderColor="Black">
+                    <Image Source="logo2.png"
+                       HeightRequest="80"
+                       HorizontalOptions="Center" />
+                </Frame>
+
+                <CollectionView x:Name="ExpenseGroupsList">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Button Text="{Binding name}"
+                                    BorderWidth="1"
+                                    BorderColor="Black"
+                                    BackgroundColor="#BDF4F8"
+                                    TextColor="Black"
+                                    HeightRequest="50"
+                                    Clicked="OnExpenseGroupClicked"/>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Button Text="Add new group"
+                        Margin="0,50,0,0"
+                        BorderWidth="1"
+                        BorderColor="Black"
+                        TextColor="Black"
+                        BackgroundColor="#BDF8BF"
+                        HeightRequest="50"
+                        CornerRadius="10"
+                        Clicked="OnAddNewGroupClicked"/>
+                
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <controls:SettingsOverlay x:Name="SettingsOverlayPopup"
+                                  Grid.Row="0"
+                                  Grid.RowSpan="2"
+                                  IsVisible="False"/>
+        
+    </Grid>
+</ContentPage>

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ScanSettlr.SignUpPage"
+             BackgroundColor="#F5F5F5">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
+
+            <Label Text="Sign Up" FontSize="26" FontAttributes="Bold" HorizontalOptions="Center" />
+
+            <Entry x:Name="nameEntry" Placeholder="Name" />
+            <Entry x:Name="emailEntry" Placeholder="Email" Keyboard="Email" />
+            <Entry x:Name="passwordEntry" Placeholder="Password" IsPassword="True" />
+            <Entry x:Name="confirmEntry" Placeholder="Confirm Password" IsPassword="True" />
+
+            <Button Text="Sign Up" TextColor="White"
+                Clicked="OnSignUpClicked" />
+
+            <Label Text="Already have an account?"
+               HorizontalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnTapToLogin" />
+                </Label.GestureRecognizers>
+            </Label>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
