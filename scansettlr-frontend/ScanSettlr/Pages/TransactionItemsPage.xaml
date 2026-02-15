@@ -72,7 +72,7 @@
                                         <Border.StrokeShape>
                                             <RoundRectangle CornerRadius="5,0,5,0"/>
                                         </Border.StrokeShape>
-                                        <Entry Text="{Binding Name, Mode=TwoWay}"
+                                        <Entry Text="{Binding name, Mode=TwoWay}"
                                                Placeholder="Name"
                                                FontSize="12"
                                                BackgroundColor="White"
@@ -81,7 +81,7 @@
 
                                     <!-- Amount (two-way string) -->
                                     <Border Stroke="Black" HeightRequest="45" WidthRequest="65">
-                                        <Entry Text="{Binding Amount, Mode=TwoWay}"
+                                        <Entry Text="{Binding amount, Mode=TwoWay}"
                                                Placeholder="Amount"
                                                FontSize="12"
                                                BackgroundColor="White"
@@ -99,8 +99,8 @@
                                             <RoundRectangle CornerRadius="0,5,0,5"></RoundRectangle>
                                         </Border.StrokeShape>
                                         <Grid ColumnDefinitions="*,Auto" Padding="0,0,5,0">
-                                            <Picker ItemsSource="{Binding Source={x:Reference TransactionItems}, Path=AvailableUsers}"
-                                                    ItemDisplayBinding="{Binding Name}"
+                                            <Picker ItemsSource="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=AvailableUsers}"
+                                                    ItemDisplayBinding="{Binding username}"
                                                     SelectedItem="{Binding PaidBy, Mode=TwoWay}"
                                                     HorizontalOptions="Fill"
                                                     FontSize="12"/>
@@ -168,6 +168,7 @@
                         TextColor="Black"
                         BackgroundColor="#CFCFCF"
                         HeightRequest="50"
+                        WidthRequest="300"
                         CornerRadius="10"
                         Clicked="OnCalculateDetailsClicked"/>
                 

@@ -8,6 +8,7 @@ import com.scansettler.schema.AddUsersRequest;
 import com.scansettler.schema.CreateExpenseGroupRequest;
 import com.scansettler.schema.GetBalancesResponse;
 import com.scansettler.services.BalanceService;
+import com.scansettler.services.CurrencyService;
 import com.scansettler.services.CustomUserDetailsService;
 import com.scansettler.services.ExpenseGroupService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,8 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/expenseGroup")
-public record ExpenseGroupController(ExpenseGroupService expenseGroupService,
-                                     CustomUserDetailsService customUserDetailsService, BalanceService balanceService)
+public record ExpenseGroupController(ExpenseGroupService expenseGroupService, CustomUserDetailsService customUserDetailsService, BalanceService balanceService, CurrencyService currencyService)
 {
     @GetMapping("/{id}")
     public ExpenseGroup getExpenseGroup(@PathVariable String id)
@@ -39,26 +39,32 @@ public record ExpenseGroupController(ExpenseGroupService expenseGroupService,
     }
 
     @GetMapping("/{id}/settlements")
-    public Set<Settlement> getSettlements(@PathVariable String id)
+    public Set<Settlement> getSettlements(@PathVariable String id, @RequestParam(required = false) String currency)
     {
         ExpenseGroup expenseGroup = expenseGroupService.getExpenseGroupById(id);
+
+        String targetCurrency = currencyOrDefault(currency);
+
+        if (!targetCurrency.equals("PLN"))
+        {
+            return currencyService.convertSettlements(expenseGroup.getSettlements(), targetCurrency, true);
+        }
 
         return expenseGroup.getSettlements();
     }
 
     @GetMapping("/{id}/balances")
-    public GetBalancesResponse getBalances(@PathVariable String id)
+    public GetBalancesResponse getBalances(@PathVariable String id, @RequestParam(required = false) String currency)
     {
         ExpenseGroup expenseGroup = expenseGroupService.getExpenseGroupById(id);
         Map<String, BigDecimal> balances = balanceService.calculateBalances(expenseGroup.getExpenseIds());
         Set<String> userIds = getUsers(id).stream().map(User::getUsername).collect(Collectors.toSet());
+        userIds.forEach(userId -> balances.putIfAbsent(userId, BigDecimal.ZERO));
 
-        for (String userId : userIds)
+        String targetCurrency = currencyOrDefault(currency);
+        if (!targetCurrency.equals("PLN"))
         {
-            if (!balances.containsKey(userId))
-            {
-                balances.put(userId, BigDecimal.ZERO);
-            }
+            return new GetBalancesResponse(currencyService.convertBalances(balances, currencyOrDefault(currency), true));
         }
 
         return new GetBalancesResponse(balances);
@@ -95,5 +101,10 @@ public record ExpenseGroupController(ExpenseGroupService expenseGroupService,
     public void deleteExpenseGroup(String id)
     {
         expenseGroupService.deleteExpenseGroup(id);
+    }
+
+    private String currencyOrDefault(String currency)
+    {
+        return (currency == null || currency.isBlank()) ? "PLN" : currency.toUpperCase();
     }
 }

@@ -89,32 +89,36 @@ namespace ScanSettlr
                 $"expense/{TransactionId}/items"
             );
 
-            if (response.ErrorMessage == null && response.Data is GetItemsResponse getItemsResponse)
+            if (response.ErrorMessage == null)
             {
-                Items.Clear();
-
-                foreach (var backendItem in getItemsResponse.Items)
+                if (response.Data is GetItemsResponse getItemsResponse)
                 {
-                    var paidByUser = AvailableUsers
-                        .FirstOrDefault(u => u.username.Equals(backendItem.paidBy));
+                    Items.Clear();
 
-                    Items.Add(new Item
+                    foreach (var backendItem in getItemsResponse.Items)
                     {
-                        name = backendItem.name,
-                        amount = backendItem.amount,
-                        paidBy = paidByUser
-                    });
-                }
+                        var paidByUser = AvailableUsers
+                            .FirstOrDefault(u => u.username.Equals(backendItem.paidBy));
 
-                if (!Items.Any())
-                {
-                    Items.Add(new Item
+                        Items.Add(new Item
+                        {
+                            name = backendItem.name,
+                            amount = backendItem.amount,
+                            paidBy = paidByUser
+                        });
+                    }
+
+                    if (!Items.Any())
                     {
-                        name = "",
-                        amount = "",
-                        paidBy = AvailableUsers.FirstOrDefault()
-                    });
+                        Items.Add(new Item
+                        {
+                            name = "",
+                            amount = "",
+                            paidBy = AvailableUsers.FirstOrDefault()
+                        });
+                    }
                 }
+                return;
             }
             else
             {
@@ -178,28 +182,82 @@ namespace ScanSettlr
                     FileTypes = FilePickerFileType.Images
                 });
 
-                if (result != null)
-                {
-                    // You can now upload, send, or display the image
-                    await DisplayAlert("Receipt Selected", $"File: {result.FileName}", "OK");
+                if (result == null)
+                    return;
 
-                    // Example: You could send it to your backend or bind it to a ViewModel property
-                    // await UploadReceiptAsync(result.FullPath);
+                var response = await ApiClient.UploadFileAsync<Dictionary<string, string>>(
+                    endpoint: "receipt",
+                    filePath: result.FullPath
+                );
+
+                if (!string.IsNullOrEmpty(response.ErrorMessage))
+                {
+                    await DisplayAlert("Error", response.ErrorMessage, "OK");
+                    return;
+                }
+
+                var items = response.Data!;
+
+                var message = string.Join("\n", items.Select(i => $"{i.Key}: {i.Value}"));
+
+
+                bool accept = await DisplayAlert(
+                    "Parsed Receipt",
+                    message + "\n\nDo you want to use this data?",
+                    "Yes",
+                    "No"
+                );
+
+                if (!accept)
+                {
+                    return;
+                }
+
+                foreach (var kv in items)
+                { 
+                    Items.Add(new Item
+                    {
+                        name = kv.Key,
+                        amount = kv.Value,
+                        paidBy = null
+                    });
                 }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Error", $"Could not send receipt: {ex.Message}", "OK");
+                await DisplayAlert("Error", ex.Message, "OK");
             }
         }
 
         private async void OnCalculateDetailsClicked(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(SelectedCurrency))
+            {
+                await DisplayAlert("Error", "Please select a currency.", "OK");
+                return;
+            }
+
             if (!Items.Any())
             {
                 await DisplayAlert("Error", "No items to calculate.", "OK");
                 return;
             }
+
+
+            var invalidItems = Items
+                .Where(i => string.IsNullOrWhiteSpace(i.name)
+                            || string.IsNullOrWhiteSpace(i.amount)
+                            || !decimal.TryParse(i.amount, out _)
+                            || i.paidBy == null)
+                .ToList();
+
+            if (invalidItems.Any())
+            {
+                await DisplayAlert("Error", "Please fill all item names, amounts, and assign a user for each item.", "OK");
+                return;
+            }
+
+            OnSaveItemsClicked(sender, e);
 
             var borrowerTotals = new Dictionary<User, decimal>();
 

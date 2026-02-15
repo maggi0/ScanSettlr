@@ -16,7 +16,7 @@ namespace ScanSettlr.Api
             _httpClient = new HttpClient
             {
                 BaseAddress = new Uri("http://192.168.0.104:8080/"),
-                Timeout = TimeSpan.FromSeconds(10)
+                Timeout = TimeSpan.FromSeconds(30)
             };
         }
 
@@ -97,6 +97,73 @@ namespace ScanSettlr.Api
                 ErrorMessage = result.ErrorMessage,
                 StatusCode = result.StatusCode
             };
+        }
+
+        public async Task<ApiResponse<T>> UploadFileAsync<T>(string endpoint, string filePath, 
+                string formFieldName = "file", bool authorize = true)
+        {
+            try
+            {
+                using var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
+
+                if (authorize)
+                {
+                    var token = Preferences.Get("auth_token", null);
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        request.Headers.Authorization =
+                            new AuthenticationHeaderValue("Bearer", token);
+                    }
+                }
+
+                var multipart = new MultipartFormDataContent();
+
+                var stream = File.OpenRead(filePath);
+                var fileContent = new StreamContent(stream);
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+
+                multipart.Add(
+                    fileContent,
+                    formFieldName,
+                    Path.GetFileName(filePath)
+                );
+
+                request.Content = multipart;
+
+                var response = await _httpClient.SendAsync(request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new ApiResponse<T>
+                    {
+                        ErrorMessage = content,
+                        StatusCode = (int)response.StatusCode
+                    };
+                }
+
+                T? data = default;
+
+                if (!string.IsNullOrWhiteSpace(content))
+                {
+                    data = JsonSerializer.Deserialize<T>(
+                        content,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                }
+
+                return new ApiResponse<T>
+                {
+                    Data = data,
+                    StatusCode = (int)response.StatusCode
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse<T>
+                {
+                    ErrorMessage = ex.Message
+                };
+            }
         }
     }
 }

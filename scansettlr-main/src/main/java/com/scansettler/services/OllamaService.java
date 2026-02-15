@@ -21,6 +21,7 @@ public class OllamaService
             The given text is an output from an OCR which scanned a receipt.
             Give me a list of items that were on the receipt and the amount paid for them.
             The response must be just the items in a JSON structure (name: amount).
+            Return ONLY valid JSON. Do not include explanations, markdown, or text.
             The items will be either in Polish or English language.
             
             Text:
