@@ -1,6 +1,5 @@
 fastapi
-uvicorn
-pytesseract
-Pillow
-opencv-python-headless
+uvicorn[standard]
 python-multipart
+paddlepaddle==3.2.0
+paddleocr

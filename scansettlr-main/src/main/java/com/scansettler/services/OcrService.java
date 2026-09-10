@@ -1,5 +1,7 @@
 package com.scansettler.services;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
@@ -14,6 +16,8 @@ import java.util.Map;
 @Service
 public class OcrService
 {
+    private final static Logger LOG = LoggerFactory.getLogger(OcrService.class);
+
     @Value("${OCR_SERVER_URL:http://ocr-server:8000}")
     private String ocrServerUrl;
 
@@ -36,6 +40,8 @@ public class OcrService
             ResponseEntity<Map> response = restTemplate.postForEntity(url, requestEntity, Map.class);
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null)
             {
+                String text = (String) response.getBody().get("text");
+                LOG.info(text);
                 return (String) response.getBody().get("text");
             }
         }
