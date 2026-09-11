@@ -15,7 +15,7 @@ namespace ScanSettlr.Api
         {
             _httpClient = new HttpClient
             {
-                BaseAddress = new Uri("http://192.168.0.104:8080/"),
+                BaseAddress = new Uri("http://10.0.2.2:8080/"),
                 Timeout = TimeSpan.FromSeconds(30)
             };
         }
