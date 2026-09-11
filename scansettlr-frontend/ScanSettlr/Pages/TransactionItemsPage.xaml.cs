@@ -2,6 +2,7 @@
 using ScanSettlr.Api.Model;
 using ScanSettlr.Api.Schema;
 using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace ScanSettlr
 {
@@ -185,7 +186,7 @@ namespace ScanSettlr
                 if (result == null)
                     return;
 
-                var response = await ApiClient.UploadFileAsync<Dictionary<string, string>>(
+                var response = await ApiClient.UploadFileAsync<List<ReceiptItem>>(
                     endpoint: "receipt",
                     filePath: result.FullPath
                 );
@@ -196,10 +197,22 @@ namespace ScanSettlr
                     return;
                 }
 
-                var items = response.Data!;
+                var items = response.Data;
 
-                var message = string.Join("\n", items.Select(i => $"{i.Key}: {i.Value}"));
+                if (items == null || !items.Any())
+                {
+                    await DisplayAlert(
+                        "Parsed Receipt",
+                        "No products were found on the receipt.",
+                        "OK"
+                    );
+                    return;
+                }
 
+                var message = string.Join(
+                    "\n",
+                    items.Select(i => $"{i.name}: {i.amount:F2}")
+                );
 
                 bool accept = await DisplayAlert(
                     "Parsed Receipt",
@@ -213,12 +226,12 @@ namespace ScanSettlr
                     return;
                 }
 
-                foreach (var kv in items)
-                { 
+                foreach (var item in items)
+                {
                     Items.Add(new Item
                     {
-                        name = kv.Key,
-                        amount = kv.Value,
+                        name = item.name,
+                        amount = item.amount.ToString("F2", CultureInfo.CurrentCulture),
                         paidBy = null
                     });
                 }

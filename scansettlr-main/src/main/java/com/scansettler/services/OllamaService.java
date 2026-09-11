@@ -2,6 +2,7 @@ package com.scansettler.services;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.scansettler.models.ReceiptItem;
 import dev.langchain4j.data.message.TextContent;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.model.chat.request.ChatRequest;
@@ -12,13 +13,14 @@ import dev.langchain4j.model.ollama.OllamaChatRequestParameters;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.Map;
+import java.util.List;
 
 @Service
 public class OllamaService
 {
     private final static String BASE_URL = "http://host.docker.internal:11434";
     private final static String MODEL_NAME = "mistral";
+
     private final static String PROMPT = """
         Poniższy tekst jest wynikiem działania OCR na paragonie.
         
@@ -37,19 +39,28 @@ public class OllamaService
         - Zachowaj nazwę produktu możliwie blisko oryginalnego tekstu.
         - Popraw oczywiste błędy OCR w nazwach produktów, jeżeli można jednoznacznie określić prawidłową nazwę.
         - Produkty mogą być w języku polskim lub angielskim.
-        - Kwoty zapisuj jako liczby, bez symbolu waluty.
+        - Kwoty zapisuj jako liczby.
         - Jako separator części dziesiętnej używaj kropki zamiast przecinka.
+        - Nie dodawaj symbolu waluty.
         
         Odpowiedź musi być wyłącznie poprawnym JSON-em w następującym formacie:
         
-        {
-          "produkt1": "kwota1",
-          "produkt2": "kwota2"
-        }
+        [
+          {
+            "name": "produkt1",
+            "amount": 5.00
+          },
+          {
+            "name": "produkt2",
+            "amount": 24.99
+          }
+        ]
         
         Jeżeli nie uda się znaleźć żadnych produktów, zwróć:
         
-        {}
+        []
+        
+        Każdy produkt powinien być osobnym obiektem. Produkty o identycznych nazwach również powinny być zwracane jako osobne obiekty.
         
         Nie dodawaj żadnych wyjaśnień, komentarzy, formatowania Markdown ani tekstu poza JSON-em.
         
@@ -61,14 +72,14 @@ public class OllamaService
     private final OllamaChatModel model = OllamaChatModel.builder()
             .baseUrl(BASE_URL)
             .modelName(MODEL_NAME)
-            .temperature(0.0)          // stop creative invention of products
+            .temperature(0.0)
             .topK(1)
             .repeatPenalty(1.0)
-            .responseFormat(ResponseFormat.JSON)   // Ollama format=json -> no fences
+            .responseFormat(ResponseFormat.JSON)
             .timeout(Duration.ofMinutes(5))
             .build();
 
-    public Map<String, String> extractItemsFromText(String text)
+    public List<ReceiptItem> extractItemsFromText(String text)
     {
         UserMessage userMessage = UserMessage.from(TextContent.from(PROMPT + text));
 

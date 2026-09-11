@@ -1,5 +1,6 @@
 package com.scansettler.controllers;
 
+import com.scansettler.models.ReceiptItem;
 import com.scansettler.services.OcrService;
 import com.scansettler.services.OllamaService;
 import org.slf4j.Logger;
@@ -13,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/receipt")
@@ -22,7 +23,7 @@ public record ReceiptController(OllamaService ollamaService, OcrService ocrServi
     private final static Logger LOG = LoggerFactory.getLogger(ReceiptController.class);
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Map<String, String> readReceipt(@RequestParam("file") MultipartFile file) throws IOException
+    public List<ReceiptItem> readReceipt(@RequestParam("file") MultipartFile file) throws IOException
     {
         LOG.info("POST /receipt");
 
